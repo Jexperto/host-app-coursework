@@ -1,0 +1,15 @@
+<RCC>
+    <qresource prefix="/">
+        <file>Main.qml</file>
+        <file>qtquickcontrols2.conf</file>
+        <file>QuizForm.qml</file>
+        <file>PageBackground.qml</file>
+        <file>QuestionForm.qml</file>
+        <file>CustomButton.qml</file>
+        <file>TextContainer.qml</file>
+        <file>QuestionInputText.qml</file>
+        <file>FileDialogForm.qml</file>
+        <file>HomeForm.qml</file>
+    </qresource>
+    <qresource prefix="/kek"/>
+</RCC>

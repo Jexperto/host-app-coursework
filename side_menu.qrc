@@ -1,0 +1,11 @@
+<RCC>
+    <qresource prefix="/">
+        <file>side_menu/main.qml</file>
+        <file>side_menu/MenuIconLive.qml</file>
+        <file>side_menu/MainMenu.qml</file>
+        <file>side_menu/MyPage.qml</file>
+        <file>side_menu/PageExample.qml</file>
+        <file>side_menu/PageAbout.qml</file>
+        <file>side_menu/PageSettings.qml</file>
+    </qresource>
+</RCC>

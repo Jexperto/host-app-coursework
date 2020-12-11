@@ -1,0 +1,13 @@
+{
+    "answers": [
+        "1",
+        "2",
+        "3",
+        "4"
+    ],
+    "numOfCols": 2,
+    "numOfRows": 2,
+    "question": "Test question",
+    "timer": 20,
+    "timerRunning": true
+}
