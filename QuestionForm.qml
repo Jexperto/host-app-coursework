@@ -5,12 +5,6 @@ import QtQuick.Layouts 1.0
 import QtQuick.Shapes 1.14
 
 
-//ApplicationWindow {
-//    width: 1280
-//    height: 720
-//    visible: true
-//    title: qsTr("Tabs")
-
     PageBackground {
         id: pageBackground
         property int numOfRows: 1
@@ -19,10 +13,11 @@ import QtQuick.Shapes 1.14
         property bool timerRunning: false
         property string question: "Sample text"
         property alias answers: gridview.model
+        signal timerElapsed();
         //anchors.fill: parent
-        color: "#f4f4f6"
-        colorFirstAccent: "#234068"
-        colorSecondAccent: "#e63946"
+//        color: "#f4f4f6"
+//        colorFirstAccent: "#234068"
+//        colorSecondAccent: "#e63946"
 
         Item {
             id: rectangle
@@ -67,7 +62,7 @@ import QtQuick.Shapes 1.14
                 }
             }
             Timer{
-                signal finished()
+
                 property double initialValue: pageBackground.timer
                 property double value: pageBackground.timer
                 running: pageBackground.timerRunning
@@ -85,7 +80,7 @@ import QtQuick.Shapes 1.14
                         text1.text = "0";
                         timerCanvas.partition = 0;
                         timerCanvas.requestPaint();
-                        finished();
+                        timerElapsed();
                         return;
                     }
                     timerCanvas.partition = value/initialValue;
@@ -113,7 +108,7 @@ import QtQuick.Shapes 1.14
             id: questionText
             height: pageBackground.height/3.5
             text: pageBackground.question
-            fontPointSize: height/7
+            fontPointSize: 40
             anchors.left: parent.left
             anchors.right: parent.right
             anchors.top: parent.top
@@ -155,7 +150,7 @@ import QtQuick.Shapes 1.14
                     text: modelData
                     anchors.fill: parent
                     backgroundColor: "#ffffff"
-                    fontPointSize: parent.height/10
+                    fontPointSize: 30
                 }
 
 
@@ -166,7 +161,6 @@ import QtQuick.Shapes 1.14
 
 }
 
-//}
 /*##^##
 Designer {
     D{i:0;formeditorZoom:0.6600000262260437}

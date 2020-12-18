@@ -12,21 +12,21 @@ QVector<QuestionFormItem> QuestionFormList::items() const
     return mItems;
 }
 
-bool QuestionFormList::setItemAt(int index, const QuestionFormItem &status)
+bool QuestionFormList::setItemAt(int index, const QuestionFormItem &item)
 {
     if (index < 0 || index > mItems.size() - 1)
         return false;
     emit beginInsertRow(index);
-    mItems[index] = status;
+    mItems[index] = item;
     emit insertedRow();
     return true;
 
 }
 
-void QuestionFormList::appendItem(const QuestionFormItem &status)
+void QuestionFormList::appendItem(const QuestionFormItem &item)
 {
     beginInsertRow(mItems.size());
-    mItems.append(status);
+    mItems.append(item);
     insertedRow();
 }
 
@@ -43,4 +43,9 @@ QuestionFormItem QuestionFormList::getItem(int index) const
     if (index < 0 || index > mItems.size() - 1)
         return QuestionFormItem();
     return mItems[index];
+}
+
+void QuestionFormList::clear()
+{
+    mItems.clear();
 }

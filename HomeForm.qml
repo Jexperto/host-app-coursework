@@ -9,7 +9,8 @@ PageBackground{
     colorFirstAccent: app.colorAccentBlue
     signal loadTestClicked();
     signal createTestClicked();
-
+    signal createRoomClicked();
+    signal testEventClicked();
         ColumnLayout {
             id: columnLayout
             x: 138
@@ -18,20 +19,32 @@ PageBackground{
             height: 100
             anchors.verticalCenter: parent.verticalCenter
             anchors.horizontalCenter: parent.horizontalCenter
-
             CustomButton {
-                id: button
+                id: createRoomButton
+                text: qsTr("Создать комнату")
+                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                onClicked: page.createRoomClicked()
+            }
+            CustomButton {
+                id: loadTestButton
                 text: qsTr("Загрузить тест")
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                 onClicked: page.loadTestClicked()
             }
 
             CustomButton {
-                id: button1
+                id: createTestButton
                 text: qsTr("Создать тест")
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                 onClicked: page.createTestClicked()
             }
+            CustomButton {
+                id: testEventButton
+                text: qsTr("Отправить тестовое событие")
+                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                onClicked: page.testEventClicked()
+            }
+
         }
 
 

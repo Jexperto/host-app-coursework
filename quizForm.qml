@@ -3,27 +3,23 @@ import QtQuick.Controls 2.5
 import CustomQuestionForm 1.0
 Item {
     id:root
+    objectName: "quizPage"
     width: 1280
     height: 720
     visible: true
     property var model
+    property int questionsNum: 0
     readonly property color colorMain: "#f4f4f6"
     readonly property color colorAccentBlue: "#234068"
     readonly property color colorAccentRed: "#e63946"
-    //title: qsTr("Tabs")
+    signal timerElapsed(int index);
+  //signal testStarted();
+    signal testEnded();
 
-//    ListModel{
-//        id: mymodel
-//        ListElement{
-//            numOfRows: 2
-//            numOfCols:2
-//            timer: 30
-//            timerRunning: true
-//            question: "Question"
-
-//        }
-
-//    }
+    QtObject{
+    id: props
+    property int currentIndex: 0
+    }
 //run first question timer
 
     SwipeView{
@@ -33,12 +29,24 @@ Item {
         Repeater{
             model: QuestionFormModel{list: formList}
             QuestionForm{
+                            id: qform;
                             timer: model.timer;
                             timerRunning: model.timerRunning;
                             question: model.question
                             numOfRows: model.numOfRows;
                             numOfCols:model.numOfCols;
                             answers: model.answers
+
+                            onTimerElapsed: {
+                            root.timerElapsed(props.currentIndex)
+                            props.currentIndex++;
+                            if (props.currentIndex == questionsNum){
+                                testEnded();
+                                return}
+                            swipeRight.trigger();
+
+                            }
+
                            }
 }
 
@@ -82,7 +90,7 @@ Item {
 
     Action {
         id: swipeRight
-        shortcut: "Right"
+       // shortcut: "Right"
         onTriggered:{if(swipeView.currentIndex<swipeView.count-1){
                 swipeView.itemAt(swipeView.currentIndex).timerRunning=false;
                 swipeView.currentIndex+=1;
@@ -93,7 +101,7 @@ Item {
     }
     Action {
         id: swipeLeft
-        shortcut: "Left"
+        //shortcut: "Left"
         onTriggered:{if(swipeView.currentIndex>0) {
                 swipeView.itemAt(swipeView.currentIndex).timerRunning=false;
                 swipeView.currentIndex-=1;
@@ -128,6 +136,7 @@ Item {
 
         }
 }
+
 }
 
 /*##^##

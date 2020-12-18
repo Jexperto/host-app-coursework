@@ -10,6 +10,7 @@
 #include <QJsonDocument>
 #include <formlist.h>
 #include <QJsonArray>
+#include "network/roommanager.h"
 
 FormController::FormController(QObject *parent) : QObject(parent)
 {
@@ -32,7 +33,9 @@ FormController::FormController(QObject *parent) : QObject(parent)
     if (pageView){
         qDebug() << "Nice! A Homepage!";
         connect(pageView, SIGNAL(loadTestClicked()), this, SLOT(onLoadFormButtonClicked()));
-        connect(pageView, SIGNAL(createTestClicked()), this, SLOT(onCreateFormButtonClicked()));
+        connect(pageView, SIGNAL(createRoomClicked()), this, SLOT(onCreateRoomButtonClicked()));
+        connect(pageView, SIGNAL(createTestClicked()), this, SLOT(onCreateTestClicked()));
+        connect(pageView, SIGNAL(testEventClicked()), this, SLOT(onTestEventClicked()));
 
     }
 
@@ -99,21 +102,74 @@ void FormController::onFileOpened(QString dir) {\
             QByteArray saveData = jsonFile.readAll();
             QJsonDocument loadDoc(QJsonDocument::fromJson(saveData));
             FormList formList;
+            int questionCount = loadDoc.array().count();
             formList.read(loadDoc.array());
             foreach(const auto form, formList.objectsList()){
                 questionFormList->appendItem(form);
             }
-            runQuizForm();
+            runQuizForm(questionCount);
 }
 
-void FormController::onCreateFormButtonClicked() {
-    onFileOpened("file:///C:/Users/aineb/source/Qt/build-HostApp-Desktop_Qt_5_15_1_MSVC2019_64bit-Debug/testjson.json");
+void FormController::onCreateRoomButtonClicked()
+{
+    RoomManager* rm = new RoomManager("25.62.222.154",80,"1.2","00021fe1-1e29-8710-0000-000400000101",this);
+   rm->createRoom("77u/NDU4NjQ1NjQ4NjE4NjE3NDg2MTQ2","pool",2,"1.0");
+
+
 }
 
-void FormController::runQuizForm()
+void FormController::onTimerElapsed(int index)
+{
+    qDebug() << "Elapsed " << index;
+}
+
+void FormController::onTestCompletedFormClosed()
+{
+    mainPage->setProperty("source","qrc:/HomeForm.qml");
+    pageView = appWindow->findChild<QObject*>("homePage");
+    questionFormList->clear();
+    if (pageView){
+        qDebug() << "Nice! A Homepage!";
+        connect(pageView, SIGNAL(loadTestClicked()), this, SLOT(onLoadFormButtonClicked()));
+        connect(pageView, SIGNAL(createTestClicked()), this, SLOT(onCreateFormButtonClicked()));
+        connect(pageView, SIGNAL(createTestClicked()), this, SLOT(onCreateTestClicked()));
+        connect(pageView, SIGNAL(testEventClicked()), this, SLOT(onTestEventClicked()));
+
+    }
+}
+
+void FormController::onTestEnded()
+{
+        qDebug() << "Ended ";
+        mainPage->setProperty("source","qrc:/QuizCompletedForm.qml");
+        pageView = appWindow->findChild<QObject*>("quizCompPage");
+        if (pageView){
+                qDebug() << "Nice! An end page!";
+            connect(pageView, SIGNAL(formClosed()), this, SLOT(onTestCompletedFormClosed()));
+        }
+}
+
+void FormController::onCreateTestClicked()
+{
+ onTestEnded();
+}
+
+void FormController::onTestEventClicked()
+{
+        mainPage->setProperty("source","qrc:/BarStack.qml");
+}
+
+void FormController::runQuizForm(int questionCount)
 {
     engine->rootContext()->setContextProperty(QStringLiteral("formList"),questionFormList);
     mainPage->setProperty("source","qrc:/QuizForm.qml");
+    pageView = appWindow->findChild<QObject*>("quizPage");
+    pageView->setProperty("questionsNum",questionCount);
+    if (pageView){
+        qDebug() << "Nice! A quizPage!";
+        connect(pageView, SIGNAL(timerElapsed(int)), this, SLOT(onTimerElapsed(int)));
+        connect(pageView, SIGNAL(testEnded()), this, SLOT(onTestEnded()));
+    }
 }
 
 //QString question;

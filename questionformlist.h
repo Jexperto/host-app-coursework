@@ -17,10 +17,11 @@ class QuestionFormList : public QObject
 public:
     explicit QuestionFormList(QObject *parent = nullptr);
     QVector<QuestionFormItem> items() const;
-    bool setItemAt(int index, const QuestionFormItem &status);
-    void appendItem(const QuestionFormItem &status);
+    bool setItemAt(int index, const QuestionFormItem &item);
+    void appendItem(const QuestionFormItem &item);
     void removeItem(int index);
     QuestionFormItem getItem(int index) const;
+    void clear();
 
 signals:
     void beginInsertRow(int row);

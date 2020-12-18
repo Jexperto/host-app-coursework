@@ -1,13 +1,13 @@
 #include "eventmessage.h"
 #include <QJsonObject>
-#include <messagedata.h>
+#include <datamanager.h>
 
 EventMessage::EventMessage(QObject *parent): QObject(parent)
 {
 
 }
 
-EventMessage::EventMessage(QString timeStamp, QString event, MessageData data, QString receiver,QObject *parent): QObject(parent)
+EventMessage::EventMessage(QString timeStamp, QString event, QJsonObject data, QString receiver,QObject *parent): QObject(parent)
 {
     this->mSendTimestamp = timeStamp;
     this->mEvent = event;
@@ -21,10 +21,8 @@ void EventMessage::write(QJsonObject &json) const
     obj["receiver"] = this->mReceiver;
     obj["send-timestamp"] = this->mSendTimestamp;
     QJsonObject messageObject;
-    messageObject["event"] = this->mEvent;
-    QJsonObject dataObject;
-    this->mData.write(dataObject);
-    messageObject["data"] = dataObject;
+    messageObject["event"] = this->mEvent; 
+    messageObject["data"] = this->mData;
     obj["message"] = messageObject;
     json = obj;
 }
@@ -40,7 +38,7 @@ void EventMessage::read(const QJsonObject &json)
         if (msg.contains("event") && msg["event"].isString())
             mEvent = msg["event"].toString();
         if (msg.contains("data") && msg["data"].isObject())
-            mData.read(msg["data"].toObject());
+            mData = msg["data"].toObject();
     }
 
 }
@@ -65,12 +63,12 @@ void EventMessage::setEvent(const QString &event)
     mEvent = event;
 }
 
-MessageData EventMessage::data() const
+QJsonObject EventMessage::data() const
 {
     return mData;
 }
 
-void EventMessage::setData(const MessageData &data)
+void EventMessage::setData(const QJsonObject &data)
 {
     mData = data;
 }

@@ -4,15 +4,15 @@ import QtQuick.Controls.Universal 2.0
 
 Page{
     id: page
-    property color color: "#f1faee"
-    property color colorFirstAccent: "#1d3557"
+    property color color: "#f4f4f6"
+    property color colorFirstAccent: "#234068"
     property color colorSecondAccent: "#e63946"
 Rectangle {
     id: background
+    color: page.color
     Universal.theme: Universal.Light
     Universal.accent: page.colorFirstAccent
     anchors.fill: parent
-    color: page.color
     clip: true
 
     Rectangle {

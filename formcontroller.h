@@ -21,11 +21,16 @@ public:
 public slots:
     void onLoadFormButtonClicked();
     void onFileOpened(QString dir);
-    void onCreateFormButtonClicked();
+    void onCreateRoomButtonClicked();
+    void onTimerElapsed(int index);
+    void onTestCompletedFormClosed();
+    void onTestEnded();
+    void onCreateTestClicked();
+    void onTestEventClicked();
 signals:
 
 private:
-void runQuizForm();
+void runQuizForm(int questionCount);
 };
 
 #endif // FORMCONTROLLER_H

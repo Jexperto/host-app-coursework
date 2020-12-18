@@ -10,6 +10,8 @@
         <file>QuestionInputText.qml</file>
         <file>FileDialogForm.qml</file>
         <file>HomeForm.qml</file>
+        <file>QuizCompletedForm.qml</file>
+        <file>BarStack.qml</file>
     </qresource>
     <qresource prefix="/kek"/>
 </RCC>

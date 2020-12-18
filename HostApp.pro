@@ -1,4 +1,4 @@
-QT += quick
+QT += quick widgets
 
 CONFIG += c++11
 
@@ -13,8 +13,10 @@ SOURCES += \
     formlist.cpp \
     main.cpp \
     messagedata.cpp \
+    network/roommanager.cpp \
     questionformlist.cpp \
-    questionformmodel.cpp
+    questionformmodel.cpp \
+    network/requester.cpp
 
 RESOURCES += qml.qrc
 
@@ -29,7 +31,8 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
-DISTFILES +=
+DISTFILES += \
+    network/requester.pri
 
 HEADERS += \
     datamanager.h \
@@ -37,6 +40,8 @@ HEADERS += \
     formcontroller.h \
     formlist.h \
     messagedata.h \
+    network/roommanager.h \
     questionformlist.h \
     questionformmodel.h \
+    network/requester.h \
     structures.h

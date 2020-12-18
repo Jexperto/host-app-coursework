@@ -6,8 +6,9 @@ Item{
     property color textColor: "#000000"
     property string text//: "This is a test text that you should never read in your right mind"
     property int borderWidth: 7
-    property int fontPointSize: 20
-    height: 191
+    property int fontPointSize: 5
+    property int minimumPointSize: 5
+    //height: 191
 Rectangle {
     color: parent.backgroundColor
     border.color: parent.borderColor
@@ -15,6 +16,8 @@ Rectangle {
     anchors.fill: parent
     Text {
         wrapMode: Text.Wrap
+        fontSizeMode: Text.Fit
+        minimumPointSize: parent.parent.minimumPointSize
         font.pointSize: parent.parent.fontPointSize
         anchors.topMargin: 25
         anchors.bottomMargin: 25
