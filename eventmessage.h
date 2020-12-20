@@ -11,8 +11,8 @@ class EventMessage : QObject
 public:
     explicit EventMessage(QObject *parent = nullptr);
     explicit EventMessage(QString timeStamp, QString event,QJsonObject data, QString receiver, QObject *parent = nullptr);
-    QString sendTimestamp() const;
-    void setSendTimestamp(long sendTimestamp);
+    QString getSendTimestamp() const;
+    void setSendTimestamp(QString sendTimestamp);
 
     QString getEvent() const;
     void setEvent(const QString &event);

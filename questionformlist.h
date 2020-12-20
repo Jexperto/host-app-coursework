@@ -20,9 +20,10 @@ public:
     bool setItemAt(int index, const QuestionFormItem &item);
     void appendItem(const QuestionFormItem &item);
     void removeItem(int index);
+    int convertItemToEventDataJson(int index, QJsonObject& data);
     QuestionFormItem getItem(int index) const;
-    void clear();
-
+    void clear();   
+    int size();
 signals:
     void beginInsertRow(int row);
     void beginRemoveRow(int row);

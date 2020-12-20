@@ -12,11 +12,11 @@ RoomManager::RoomManager(QString host, int port, QString apiVersion, QString app
 }
 
 
-void RoomManager::createRoom(const QString& appChaos ,const QString &eventMode, const int &maxUsers, const QString &formVersion, const QJsonObject* optionals)
+void RoomManager::createRoom(const QString& appChaos ,const EventMode &eventMode, const int &maxUsers, const QString &formVersion, const QJsonObject* optionals)
 {
 
     QJsonObject object;
-    object["event-mode"] = eventMode;
+    object["event-mode"] = eventMode == EventMode::WEBSOCKET ? "websocket" : "pool";
     object["max-size"] = maxUsers;
     object["form-set-version"] = formVersion;
     if (optionals!=nullptr){
@@ -41,6 +41,7 @@ void RoomManager::createRoom(const QString& appChaos ,const QString &eventMode, 
 
            if (obj.contains("chaos") && obj["chaos"].isString())
                requester->setToken(obj["chaos"].toString());
+           emit roomCreated();
            qDebug() << "Success! " << obj;
        },
 
@@ -86,18 +87,19 @@ void RoomManager::addPage(const QJsonObject &pageInfo)
     QMap<QString,QString> extraHeader;
     extraHeader.insert("room-id",this->roomId);
     extraHeader.insert("api-version",this->apiVersion);
-    requester->sendRequest("rooms/pages/",[](const QJsonObject& obj)->void{
+    requester->sendRequest("rooms/pages/",[=](const QJsonObject& obj)->void{
         if ((obj.contains("description") && obj["description"].isString()))
              qDebug() << "Success! " << obj["description"].toString();
         else
              qDebug() << "Success! " << "No comments...";
+        emit pageCreated(true);
     },
-    [](const QJsonObject& obj)->void{
+    [=](const QJsonObject& obj)->void{
         if ((obj.contains("description") && obj["description"].isString()))
              qDebug() << "Fuck me! " << obj["description"].toString();
         else
              qDebug() << "Fuck me! " << "No comments...";
-
+       emit pageCreated(false);
     },
     Requester::Type::POST, pageInfo.toVariantMap(),&extraHeader);
 }
@@ -128,7 +130,7 @@ void RoomManager::sendEvent(const QJsonObject &message)
     QMap<QString,QString> extraHeader;
     extraHeader.insert("room-id",this->roomId);
     extraHeader.insert("api-version",this->apiVersion);
-    requester->sendRequest("rooms/pages/",[this](const QJsonObject& obj)->void{
+    requester->sendRequest("rooms/events/pool/",[this](const QJsonObject& obj)->void{
         if ((obj.contains("description") && obj["description"].isString()))
              qDebug() << "Success! " << obj["description"].toString();
         else
@@ -174,5 +176,10 @@ QString RoomManager::getApiVersion() const
 void RoomManager::setApiVersion(const QString &value)
 {
     apiVersion = value;
+}
+
+QString RoomManager::getRoomCode() const
+{
+    return roomCode;
 }
 

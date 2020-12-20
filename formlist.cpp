@@ -14,6 +14,9 @@ FormList::FormList(const QVector<QuestionFormItem>& list, QObject* parent) : QOb
     this->mObjectsList = list;
 }
 
+
+
+
 void FormList::write(QJsonArray& json) const
 {
     QJsonArray array;
@@ -33,6 +36,7 @@ void FormList::write(QJsonArray& json) const
         array.append(formObject);
     }
     json = array;
+
 }
 
 
@@ -74,5 +78,8 @@ QVector<QuestionFormItem> FormList::objectsList() const
 
 void FormList::setObjectsList(const QVector<QuestionFormItem>& objects)
 {
-	mObjectsList = objects;
+    mObjectsList = objects;
 }
+
+
+

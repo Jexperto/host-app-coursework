@@ -15,7 +15,7 @@ struct QuestionFormItem{
 
 struct FormLoadStruct{
     QString mFormName;
-    QString mUser;
+   //QString mUser;
     QJsonObject mDataByID;
     QJsonObject mDataByClass;
 };

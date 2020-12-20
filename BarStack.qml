@@ -1,60 +1,91 @@
 import QtQuick 2.0
 import QtQuick.Layouts 1.0
-Item {
+Item{
     id:root
-property int height: 20
+    property int textPointSize: 10
+    property int minimumBarWidth: 100
+    property int preferredBarWidth: 200
+    property int itemHeight: 20
+    property color barColor: "#70A5CA"
+    width: 400
+    height: 100
     RowLayout {
         id: row
-        anchors.fill: parent
+        anchors.top: parent.top
+        anchors.left: parent.left
+        anchors.right: parent.right
         spacing: 3
         ColumnLayout {
-            anchors.left: parent.left
-            anchors.top: parent.top
-            anchors.bottom: parent.bottom
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+           // Layout.preferredWidth: rec.width
+            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
             id: playerColumn
+            Repeater{
+              //  model: QuestionFormModel{list: formList}
+                model: chartModel
+                Item {
+                    id:rec
+                    width: myText.contentWidth
+                    height: myText.contentHeight
+                    Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                    Text {
+                        id: myText
+                        font.family: "Helvetica"
+                        font.pointSize: root.textPointSize
+                        text:  model.name
+                        anchors.fill: parent
 
-            TextContainer {
-                id: name
-                height: root.height
-                backgroundColor: "#ffffff"
-                fontPointSize: 30
-                text: qsTr("text")
-            }
-            TextContainer {
-                id: name1
-                height: root.height
-                text: qsTr("text")
-                backgroundColor: "#ffffff"
-                fontPointSize: 30
-            }
-            TextContainer {
-                id: name2
-                height: root.height
-                backgroundColor: "#ffffff"
-                fontPointSize: 30
-                text: qsTr("text")
-            }
-
-
+                    }
+                  }
+    }
 
         }
-
 
         ColumnLayout {
             id: chartColumn
-            anchors.left: playerColumn.right
-            anchors.top: parent.top
-            anchors.bottom: parent.bottom
-            Rectangle { color: "red"; width: 50; height: 20 }
-            Rectangle { color: "green"; width: 70; height: 20 }
-            Rectangle { color: "blue"; width: 80; height: 20 }
+            Layout.fillHeight: true
+
+            Repeater{
+                model:chartModel
+            Item{
+                Layout.fillWidth: true
+                height: root.itemHeight
+                Layout.minimumWidth: root.minimumBarWidth
+                Layout.preferredWidth: root.preferredBarWidth
+                Rectangle { color: root.barColor; width: parent.width*model.result/100; height: root.itemHeight;}
+            }
+        }}
+
+
+        ColumnLayout {
+            Layout.fillHeight: true
+            Layout.fillWidth: false
+           // Layout.preferredWidth: rec.width
+            Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+            id: pecentColumn
+            Repeater{
+                model: chartModel
+            Item {
+                width: pcText.contentWidth
+                height: pcText.contentHeight
+                Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+
+                Text {
+                    id: pcText
+                    font.family: "Helvetica"
+                    font.pointSize: root.textPointSize
+                    text:  model.result.toString() + "%";
+                    anchors.fill: parent
+
+                }
+              }}
+
         }
-
     }
-
-
-
 }
+
+
 
 /*##^##
 Designer {

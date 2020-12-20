@@ -7,6 +7,7 @@ CONFIG += c++11
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    chartmodel.cpp \
     datamanager.cpp \
     eventmessage.cpp \
     formcontroller.cpp \
@@ -35,6 +36,7 @@ DISTFILES += \
     network/requester.pri
 
 HEADERS += \
+    chartmodel.h \
     datamanager.h \
     eventmessage.h \
     formcontroller.h \

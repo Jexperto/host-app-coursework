@@ -3,7 +3,6 @@ import QtQuick.Controls 2.5
 import QtQuick.Controls.Material 2.0
 import QtQuick.Layouts 1.0
 import QtQuick.Shapes 1.14
-import QtCharts 2.0
 
     PageBackground {
         id: compForm
@@ -13,37 +12,29 @@ import QtCharts 2.0
         signal formClosed();
 
 
-        ChartView {
-            id: bar
-            anchors.left: parent.left
-            anchors.right: parent.right
-            anchors.top: parent.top
-            anchors.bottom: parent.bottom
-            anchors.leftMargin: 170
-            anchors.rightMargin: 170
-            anchors.bottomMargin: 81
-            anchors.topMargin: 99
-            HorizontalBarSeries {
-                name: "BarSeries"
-                BarSet {
+                TextContainer {
+                            id: endText
+                            text: compForm.text
+                            anchors.fill: parent
+                            anchors.bottomMargin: 309
+                            anchors.leftMargin: 137
+                            anchors.topMargin: 106
+                            anchors.rightMargin: 137
+                            backgroundColor: "#ffffff"
+                            minimumPointSize: 10
+                            fontPointSize: 40
+                                            }
+                BarStack{
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    anchors.top: endText.bottom
+                    anchors.horizontalCenterOffset: 0
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.topMargin: 40
+                    anchors.leftMargin: 200
+                    anchors.rightMargin: 200
 
-                    values: [2, 3, 4, 5, 6]
-                    label: "Results"
                 }
-
-            }
-        }
-//                TextContainer {
-        //                    text: compForm.text
-        //                    anchors.fill: parent
-        //                    anchors.bottomMargin: 185
-        //                    anchors.leftMargin: 48
-        //                    anchors.topMargin: 127
-        //                    anchors.rightMargin: 48
-        //                    backgroundColor: "#ffffff"
-        //                    minimumPointSize: 10
-        //                    fontPointSize: 40
-        //                                    }
 
         Button {
             id: closeButton
@@ -64,7 +55,7 @@ import QtCharts 2.0
 //}
 /*##^##
 Designer {
-    D{i:0;autoSize:true;formeditorZoom:0.6600000262260437;height:480;width:640}D{i:1}
+    D{i:0;autoSize:true;formeditorZoom:0.6600000262260437;height:480;width:640}
 }
 ##^##*/
 

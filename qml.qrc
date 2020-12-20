@@ -12,6 +12,15 @@
         <file>HomeForm.qml</file>
         <file>QuizCompletedForm.qml</file>
         <file>BarStack.qml</file>
+        <file>RoomCreatedForm.qml</file>
+        <file>CustomBusyIndicator.qml</file>
+        <file>CustomBusyIndicatorStyle.qml</file>
+        <file>htmls/2opt_question.html</file>
+        <file>htmls/3opt_question.html</file>
+        <file>htmls/4opt_question.html</file>
+        <file>htmls/5opt_question.html</file>
+        <file>htmls/6opt_question.html</file>
+        <file>htmls/text_question.html</file>
     </qresource>
     <qresource prefix="/kek"/>
 </RCC>

@@ -1,5 +1,5 @@
 #include "questionformlist.h"
-
+#include "QJsonObject"
 QuestionFormList::QuestionFormList(QObject *parent) : QObject(parent)
 {
     //mItems.append(QuestionFormItem({"Test question",2,2,20,true,QStringList({"1","2","3","4"})}));
@@ -38,6 +38,22 @@ void QuestionFormList::removeItem(int index)
     mItems.removeAt(index);
     emit removedRow();}
 
+int QuestionFormList::convertItemToEventDataJson(int index, QJsonObject& data)
+{
+        QJsonObject formObject;
+        formObject["question"] = this->mItems.at(index).question;
+        if (this->mItems.at(index).answers.length()>1){
+            int count = 1;
+            QString buttonTemplate = "button%1";
+            foreach(const auto answer, this->mItems.at(index).answers) {
+                formObject[buttonTemplate.arg(count)] = answer;
+                count++;
+            }
+         }
+        data = formObject;
+        return this->mItems.at(index).answers.length();
+}
+
 QuestionFormItem QuestionFormList::getItem(int index) const
 {
     if (index < 0 || index > mItems.size() - 1)
@@ -48,4 +64,9 @@ QuestionFormItem QuestionFormList::getItem(int index) const
 void QuestionFormList::clear()
 {
     mItems.clear();
+}
+
+int QuestionFormList::size()
+{
+    return mItems.size();
 }

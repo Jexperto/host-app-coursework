@@ -43,12 +43,12 @@ void EventMessage::read(const QJsonObject &json)
 
 }
 
-QString EventMessage::sendTimestamp() const
+QString EventMessage::getSendTimestamp() const
 {
     return mSendTimestamp;
 }
 
-void EventMessage::setSendTimestamp(long sendTimestamp)
+void EventMessage::setSendTimestamp(QString sendTimestamp)
 {
     mSendTimestamp = sendTimestamp;
 }
