@@ -28,6 +28,7 @@ class FormController: public QObject {
     QMap<QString,QString>* currentQuestionUserAnswers;
     std::function<void()> startLambda;
     int currentIndex;
+    QString ipAddress;
     //int questionsElapsed;
     //QStringList fileList;
 public:

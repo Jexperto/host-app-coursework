@@ -7,7 +7,7 @@ import QtQuick.Shapes 1.14
     PageBackground {
         id: compForm
         objectName: "quizCompPage"
-        property string text: "Test completed"
+        property string text: "Тест завершён"
         //property color backgroundColor: "#ffffff"
         signal formClosed();
 

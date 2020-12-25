@@ -20,6 +20,7 @@
 
 FormController::FormController(QObject *parent) : QObject(parent)
 {
+    ipAddress = "176.109.34.38";
     //questionsElapsed = 0;
     currentQuestionUserAnswers = new QMap<QString,QString>;
     users = new QMap<QString,QString>;
@@ -262,7 +263,7 @@ QString FormController::getHTMLPage(int questNum)
 void FormController::onCreateRoomButtonClicked()
 {
     testRunning = false;
-    rm = new RoomManager("176.109.35.63",80,"1.2","00021fe1-1e29-8710-0000-000400000101",this);
+    rm = new RoomManager(ipAddress,80,"1.2","00021fe1-1e29-8710-0000-000400000101",this);
     rm->createRoom("YWRzYmtoZHNhZmhrdmpsZmFzZHZoamthc2ZkdmhqYXNkdmhqaw==",RoomManager::EventMode::POOL,2,"1.0");
 
     if (pageView!=nullptr)
@@ -444,18 +445,33 @@ void FormController::testMethod()
         users->insert("4","In");
         users->insert("5","Babylon");
 
-//        users->insert("6","Me");
-//        users->insert("7","You");
-//        users->insert("8","There");
-//        users->insert("9","In");
-//        users->insert("10","Babylon");
+        users->insert("6","Me");
+        users->insert("7","You");
+        users->insert("8","There");
+        users->insert("9","In");
+        users->insert("10","Babylon");
 
-//        users->insert("11","Me");
-//        users->insert("12","You");
-//        users->insert("13","There");
-//        users->insert("14","In");
-//        users->insert("15","Babylon");
+        users->insert("11","Me");
+        users->insert("12","You");
+        users->insert("13","There");
+        users->insert("14","In");
+        users->insert("15","Babylon");
 
+        users->insert("16","Me");
+        users->insert("17","You");
+        users->insert("18","There");
+        users->insert("19","In");
+        users->insert("20","Babylon");
+
+        users->insert("21","Me");
+        users->insert("22","You");
+        users->insert("23","There");
+        users->insert("24","In");
+        users->insert("25","Babylon");
+
+        users->insert("26","Me");
+        users->insert("27","You");
+        users->insert("28","There");
 
         userAnswerResults.append(QPair<QString,int>("1",8));
         userAnswerResults.append(QPair<QString,int>("2",7));
@@ -463,17 +479,33 @@ void FormController::testMethod()
         userAnswerResults.append(QPair<QString,int>("5",4));
         userAnswerResults.append(QPair<QString,int>("4",5));
 
-//        userAnswerResults.append(QPair<QString,int>("6",6));
-//        userAnswerResults.append(QPair<QString,int>("7",8));
-//        userAnswerResults.append(QPair<QString,int>("8",4));
-//        userAnswerResults.append(QPair<QString,int>("9",7));
-//        userAnswerResults.append(QPair<QString,int>("10",5));
+        userAnswerResults.append(QPair<QString,int>("6",6));
+        userAnswerResults.append(QPair<QString,int>("7",8));
+        userAnswerResults.append(QPair<QString,int>("8",4));
+        userAnswerResults.append(QPair<QString,int>("9",7));
+        userAnswerResults.append(QPair<QString,int>("10",5));
 
-//        userAnswerResults.append(QPair<QString,int>("11",6));
-//        userAnswerResults.append(QPair<QString,int>("12",8));
-//        userAnswerResults.append(QPair<QString,int>("13",4));
-//        userAnswerResults.append(QPair<QString,int>("14",7));
-//        userAnswerResults.append(QPair<QString,int>("15",5));
+        userAnswerResults.append(QPair<QString,int>("11",6));
+        userAnswerResults.append(QPair<QString,int>("12",8));
+        userAnswerResults.append(QPair<QString,int>("13",4));
+        userAnswerResults.append(QPair<QString,int>("14",7));
+        userAnswerResults.append(QPair<QString,int>("15",5));
+
+        userAnswerResults.append(QPair<QString,int>("16",8));
+        userAnswerResults.append(QPair<QString,int>("17",7));
+        userAnswerResults.append(QPair<QString,int>("18",6));
+        userAnswerResults.append(QPair<QString,int>("19",4));
+        userAnswerResults.append(QPair<QString,int>("20",5));
+
+        userAnswerResults.append(QPair<QString,int>("21",6));
+        userAnswerResults.append(QPair<QString,int>("22",8));
+        userAnswerResults.append(QPair<QString,int>("23",4));
+        userAnswerResults.append(QPair<QString,int>("24",7));
+        userAnswerResults.append(QPair<QString,int>("25",5));
+
+        userAnswerResults.append(QPair<QString,int>("26",6));
+        userAnswerResults.append(QPair<QString,int>("27",8));
+        userAnswerResults.append(QPair<QString,int>("28",4));
             onTestEnded();
  //  mainPage->setProperty("source","qrc:/QuizCompletedForm.qml");
 }
