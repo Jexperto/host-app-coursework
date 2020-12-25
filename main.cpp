@@ -3,7 +3,7 @@
 #include <QGuiApplication>
 #include <QFile>
 #include <QDebug>
-#include <eventmessage.h>
+#include <sendeventmessage.h>
 #include <datamanager.h>
 #include <QJsonDocument>
 int main(int argc, char *argv[])

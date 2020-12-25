@@ -9,7 +9,8 @@
 #include <QQmlApplicationEngine>
 #include <QJsonDocument>
 #include <formlist.h>
-#include <eventmessage.h>
+#include <sendeventmessage.h>
+#include "receiveeventmessage.h"
 #include <datamanager.h>
 #include <QJsonArray>
 #include "network/roommanager.h"
@@ -19,14 +20,16 @@
 
 FormController::FormController(QObject *parent) : QObject(parent)
 {
-
+    //questionsElapsed = 0;
+    currentQuestionUserAnswers = new QMap<QString,QString>;
+    users = new QMap<QString,QString>;
     pageNumOfQuest = new QSet<int>;
     qmlRegisterType<QuestionFormModel>("CustomQuestionForm",1,0,"QuestionFormModel");
     qmlRegisterType<ChartModel>("ChartModel",1,0,"ChartModel");
     qmlRegisterUncreatableType<QuestionFormList>("CustomQuestionForm", 1, 0, "FormList",
                                                QStringLiteral("FormList should not be created in QML"));
     chartModel = new ChartModel;
-    questionFormList = new QuestionFormList(this);
+    questionFormList = new QuestionFormList(123,this);
     engine =  new QQmlApplicationEngine(this);
     engine->rootContext()->setContextProperty(QStringLiteral("chartModel"),chartModel);
     //engine->rootContext()->setContextProperty("chartModel", QVariant::fromValue(*chartModel));
@@ -41,6 +44,7 @@ FormController::FormController(QObject *parent) : QObject(parent)
     engine->load(url);
     appWindow = engine->rootObjects().takeAt(0);
     mainPage = appWindow->findChild<QObject*>("mainPage");
+    pageView = mainPage;
     openHomeForm();
 
 //         QFile jsonFile("form.json");
@@ -49,8 +53,8 @@ FormController::FormController(QObject *parent) : QObject(parent)
 //             }
 //        FormList form;
 //        QVector<QuestionFormItem> items;
-//        items.append({ "Test question",2,2,20,true,QStringList({"1","2","3","4"}) });
-//        items.append({ "Test question",1,1,20,true,QStringList({"Алохааааааааааа"}) });
+//        items.append({ "Test question",2,2,20,true,"5",QStringList({"1","2","3","4"})});
+//        items.append({ "Test question",1,1,20,true,"Aлохааа",QStringList() });
 //        form.setObjectsList(items);
 //        QJsonArray testObject;
 //        form.write(testObject);
@@ -69,6 +73,55 @@ FormController::~FormController()
     if (rm!=nullptr)
         rm->deleteRoom();
     delete chartModel; //TODO: clear inside objects
+}
+
+
+void FormController::onReceivedEvent(ReceiveEventMessage *eventMessage)
+{
+    QString eventType = eventMessage->getEvent();
+    qDebug() << "Event:    Received " << eventType << "event";
+
+   if (eventType == "connect" && !testRunning){
+        connect(rm,&RoomManager::receivedUsers,this,&FormController::onReceivedUsers);
+        rm->getUsers();
+        rm->receiveEvent();
+
+    return;
+   }
+
+   if (eventType == "disconnect"){
+    return;
+   }
+
+   if (eventType == "unknown"){
+    return;
+   }
+
+   if (eventType == "inputData"){
+       QJsonObject ans = eventMessage->data();
+       qDebug() << "--------User answer: "<< ans;
+       QString value;
+       if (ans.contains("value")&& ans["value"].isString())
+           value = ans["value"].toString();
+       else
+       if (ans.contains("answer")&& ans["answer"].isString())
+           value = ans["answer"].toString();
+       qDebug() << "value: "<< value;
+       currentQuestionUserAnswers->insert(eventMessage->sender(),value);
+       rm->receiveEvent();
+    return;
+   }
+}
+
+void FormController::onReceivedUsers(QMap<QString, QString>* users)
+{
+    this->users = users;
+    qDebug() << *users;
+}
+
+void FormController::onRefreshButtonClicked()
+{
+    rm->receiveEvent();
 }
 
 void FormController::onLoadFormButtonClicked() {
@@ -92,8 +145,9 @@ void FormController::onLoadFormButtonClicked() {
     connect(loadFormObject, SIGNAL(choseFile(QString)), this, SLOT(onFileOpened(QString)));
 }
 
+
 void FormController::onFileOpened(QString dir) {
-    if (pageView)
+    if (pageView!=nullptr)
     pageView->setProperty("busyIndicatorVisible",QVariant::fromValue(true));
 
     if (prevPath->isWritable()){
@@ -112,7 +166,7 @@ void FormController::onFileOpened(QString dir) {
             pageNumOfQuest->clear();
             foreach(const auto form, formList.objectsList()){
                 questionFormList->appendItem(form);
-                pageNumOfQuest->insert(form.answers.length());
+                pageNumOfQuest->insert(form.wrongAnswers.length()+1);
             }
             if(rm!=nullptr){
                  QString templ = "qst%1";
@@ -126,7 +180,7 @@ void FormController::onFileOpened(QString dir) {
                     rm->addPage(info);
                 }
             }
-            connect(this,&FormController::allPagesCreated,this,[=](){if (pageView){
+            connect(this,&FormController::allPagesCreated,this,[=](){if (pageView!=nullptr){
                     pageView->setProperty("busyIndicatorVisible",QVariant::fromValue(false));
                     pageView->setProperty("startTestButtonVisible",QVariant::fromValue(true));
                 }});
@@ -135,7 +189,40 @@ void FormController::onFileOpened(QString dir) {
 
 void FormController::onStartTestClicked()
 {
-     runQuizForm(questionCount);
+   // questionsElapsed = 0;
+    rm->receiveEvent();
+
+    if (pageView!=nullptr)
+      pageView->setProperty("busyIndicator",QVariant::fromValue(true));
+//    startLambda = [=]()->void{
+//        userAnswerResults.clear();
+//        for (auto i = users->begin(), j = users->end(); i!=j;i++){
+//              userAnswerResults.append(QPair<QString,int>(i.key(),0));
+//        }};
+            QObject *context = new QObject(this);
+            connect(rm,&RoomManager::noMoreEvents, context, [this,context] {
+                userAnswerResults.clear();
+                for (auto i = users->begin(), j = users->end(); i!=j;i++){
+                      userAnswerResults.append(QPair<QString,int>(i.key(),0));
+                }
+
+                QJsonObject out;
+                out["id"] = "stylesheet";
+                SendEventMessage msg(this);
+                msg.setData(out);
+                msg.setEvent("stylesheet");
+                msg.setReceiver("null");
+                msg.setSendTimestamp(QDateTime::currentDateTime().toString(Qt::ISODate));
+                msg.write(out);
+                rm->sendEvent(out);
+
+              runQuizForm(questionCount);
+              context->deleteLater(); // changed
+
+            });
+
+
+
 }
 
 void FormController::onPageCreated(bool success)
@@ -174,23 +261,52 @@ QString FormController::getHTMLPage(int questNum)
 
 void FormController::onCreateRoomButtonClicked()
 {
-    rm = new RoomManager("25.62.222.154",80,"1.2","00021fe1-1e29-8710-0000-000400000101",this);
-    rm->createRoom("77u/NDU4NjQ1NjQ4NjE4NjE3NDg2MTQ2",RoomManager::EventMode::POOL,2,"1.0");
-    if (pageView)
+    testRunning = false;
+    rm = new RoomManager("176.109.35.63",80,"1.2","00021fe1-1e29-8710-0000-000400000101",this);
+    rm->createRoom("YWRzYmtoZHNhZmhrdmpsZmFzZHZoamthc2ZkdmhqYXNkdmhqaw==",RoomManager::EventMode::POOL,2,"1.0");
+
+    if (pageView!=nullptr)
     pageView->setProperty("busyIndicator",QVariant::fromValue(true));
-    connect(rm,&RoomManager::roomCreated,this,[=]()->void{
+    QObject* context = new QObject;
+    QObject* failedContext = new QObject;
+
+    connect(rm,&RoomManager::roomCreateFailed,failedContext,[this,context,failedContext]()->void{
+          pageView->setProperty("busyIndicator",QVariant::fromValue(false));
+          context->deleteLater();
+          failedContext->deleteLater();
+    });
+    connect(rm,&RoomManager::roomCreated,context,[this,context,failedContext]()->void{
+
+        connect(rm,&RoomManager::receivedEvent,this,&FormController::onReceivedEvent);
+        connect(rm,&RoomManager::receivedUsers,this,&FormController::onReceivedUsers);
+        QFile styleFile(":/htmls/app.css");
+        if (styleFile.open(QIODevice::ReadOnly)) {
+            QByteArray data = styleFile.readAll();
+            rm->addResource("stylesheet",data);
+          }
+        else
+             qDebug() << "Can't open stylesheet file";
+
+
         mainPage->setProperty("source","qrc:/RoomCreatedForm.qml");
+        if (pageView!=nullptr)
+            disconnect(pageView,nullptr,nullptr,nullptr);
         pageView = appWindow->findChild<QObject*>("roomCreatedPage");
-        if (pageView){
+        if (pageView!=nullptr){
             pageView->setProperty("codeText",rm->getRoomCode());
-          connect(pageView, SIGNAL(deleteRoomClicked()), this, SLOT(onDeleteRoomButtonClicked()));
-          connect(pageView, SIGNAL(loadTestClicked()), this, SLOT(onLoadFormButtonClicked()));
-          connect(pageView, SIGNAL(createTestClicked()), this, SLOT(onCreateTestClicked()));
+            connect(pageView, SIGNAL(deleteRoomClicked()), this, SLOT(onDeleteRoomButtonClicked()));
+            connect(pageView, SIGNAL(loadTestClicked()), this, SLOT(onLoadFormButtonClicked()));
+            connect(pageView, SIGNAL(createTestClicked()), this, SLOT(onCreateTestClicked()));
             connect(pageView, SIGNAL(startTestClicked()), this, SLOT(onStartTestClicked()));
+            connect(pageView, SIGNAL(refreshClicked()), this, SLOT(onRefreshButtonClicked()));
           //connect(pageView, SIGNAL(testEventClicked()), this, SLOT(onTestEventClicked()));
           //connect(pageView, SIGNAL(createPageClicked()), this, SLOT(onCreatePageButtonClicked()));
           //connect(pageView, SIGNAL(deletePageClicked()), this, SLOT(onDeletePageButtonClicked()));})
-}});
+}
+        context->deleteLater();
+        failedContext->deleteLater();
+
+    });
 }
 void FormController::onDeleteRoomButtonClicked()
 {
@@ -222,7 +338,7 @@ void FormController::onDeletePageButtonClicked()
 void FormController::onTestEventClicked()
 {
     if(rm!=nullptr){
-        EventMessage msg(this);
+        SendEventMessage msg(this);
         msg.setEvent("formLoad");
         msg.setReceiver("null");
         msg.setSendTimestamp("2020-12-19T14:37:36");
@@ -241,32 +357,62 @@ void FormController::onTestEventClicked()
 
 void FormController::onTimerElapsed(int index)
 {
-    QJsonObject dbyid;
-    if (index+1 < questionFormList->size()){
-    int optNum = questionFormList->convertItemToEventDataJson(index+1,dbyid);
+    testRunning = true;
     qDebug() << "Elapsed " << index;
-    QString templ = "qst%1";
+    currentIndex = index;
 
-    FormLoadStruct fl;
-    fl.mDataByID = dbyid;
-    fl.mFormName = templ.arg(optNum);
-    QJsonObject out;
-    DataManager::write(&fl,&out);
-    EventMessage msg(this);
-    msg.setData(out);
-    msg.setEvent("formLoad");
-    msg.setReceiver("null");
-    msg.setSendTimestamp(QDateTime::currentDateTime().toString(Qt::ISODate));
-    msg.write(out);
-    qDebug() << out;
-   rm->sendEvent(out);
-    }
+    currentQuestionUserAnswers->clear();
+    rm->receiveEvent();
+    QObject *context = new QObject(this);
+    connect(rm, &RoomManager::noMoreEvents,context,[=]()->void{
+                for (auto i = currentQuestionUserAnswers->begin(), j = currentQuestionUserAnswers->end(); i!=j;i++){
+                    for (auto currUser = userAnswerResults.begin();currUser!=userAnswerResults.end() ;currUser++) {
+                        auto temp = questionFormList->getItem(index).rightAnswer.toLower();
+                        auto val = i.value().toLower();
+                        if (val==temp && i.key()==currUser->first){
+                            ++currUser->second;
+                        }
+                    }
+                }
+                foreach(auto user,userAnswerResults){
+                  qDebug() << "-------------User results:" <<user;}
+
+                  QJsonObject dbyid;
+                  if (index+1 < questionFormList->size()){
+                  int optNum = questionFormList->convertItemToEventDataJson(index+1,dbyid);
+                 // qDebug() << "----------------------" << dbyid;
+                  QString templ = "qst%1";
+
+                  FormLoadStruct fl;
+                  fl.mDataByID = dbyid;
+                  fl.mFormName = templ.arg(optNum);
+                  QJsonObject out;
+                  DataManager::write(&fl,&out);
+                  SendEventMessage msg(this);
+                  msg.setData(out);
+                  msg.setEvent("formLoad");
+                  msg.setReceiver("null");
+                  msg.setSendTimestamp(QDateTime::currentDateTime().toString(Qt::ISODate));
+                  msg.write(out);
+                  qDebug() << out;
+                 rm->sendEvent(out);
+                  }
+                  context->deleteLater();
+                  if (index>=questionCount-1){
+                        onTestEnded();
+                  }
+            });
+
 }
 
 void FormController::onTestCompletedFormClosed()
 {
+    disconnect(this, nullptr, nullptr,nullptr);
     if (loadFormObject != nullptr)
         loadFormObject->deleteLater();
+    if (rm!=nullptr)
+        rm->deleteRoom();
+    chartModel->clear();
     onDeleteRoomButtonClicked();
     openHomeForm();
 
@@ -278,22 +424,76 @@ void FormController::openHomeForm()
     pageCount = 0;
     questionCount = 0;
     mainPage->setProperty("source","qrc:/HomeForm.qml");
+    if (pageView!=nullptr)
+        disconnect(pageView,nullptr,nullptr,nullptr);
     pageView = appWindow->findChild<QObject*>("homePage");
     questionFormList->clear();
-    if (pageView){
+    if (pageView!=nullptr){
         qDebug() << "Nice! A Homepage!";
         connect(pageView, SIGNAL(createRoomClicked()), this, SLOT(onCreateRoomButtonClicked()));
+        connect(pageView, SIGNAL(testButtonClicked()), this, SLOT(testMethod()));
     }
+}
+
+void FormController::testMethod()
+{
+        questionCount = 10;
+        users->insert("1","Me");
+        users->insert("2","You");
+        users->insert("3","There");
+        users->insert("4","In");
+        users->insert("5","Babylon");
+
+//        users->insert("6","Me");
+//        users->insert("7","You");
+//        users->insert("8","There");
+//        users->insert("9","In");
+//        users->insert("10","Babylon");
+
+//        users->insert("11","Me");
+//        users->insert("12","You");
+//        users->insert("13","There");
+//        users->insert("14","In");
+//        users->insert("15","Babylon");
+
+
+        userAnswerResults.append(QPair<QString,int>("1",8));
+        userAnswerResults.append(QPair<QString,int>("2",7));
+        userAnswerResults.append(QPair<QString,int>("3",6));
+        userAnswerResults.append(QPair<QString,int>("5",4));
+        userAnswerResults.append(QPair<QString,int>("4",5));
+
+//        userAnswerResults.append(QPair<QString,int>("6",6));
+//        userAnswerResults.append(QPair<QString,int>("7",8));
+//        userAnswerResults.append(QPair<QString,int>("8",4));
+//        userAnswerResults.append(QPair<QString,int>("9",7));
+//        userAnswerResults.append(QPair<QString,int>("10",5));
+
+//        userAnswerResults.append(QPair<QString,int>("11",6));
+//        userAnswerResults.append(QPair<QString,int>("12",8));
+//        userAnswerResults.append(QPair<QString,int>("13",4));
+//        userAnswerResults.append(QPair<QString,int>("14",7));
+//        userAnswerResults.append(QPair<QString,int>("15",5));
+            onTestEnded();
+ //  mainPage->setProperty("source","qrc:/QuizCompletedForm.qml");
 }
 
 void FormController::onTestEnded()
 {
-    chartModel->append("Peter",100);
-    chartModel->append("Lois",70);
-    chartModel->append("Meg",5);
+
+    std::sort(userAnswerResults.begin(),userAnswerResults.end(),[](QPair<QString,int>first,QPair<QString,int>second)->bool{return first.second>second.second;});
+    qDebug() << "Sorted array: " << userAnswerResults;
+    for (auto res = userAnswerResults.begin();res<userAnswerResults.end();res++ ) {
+        qDebug() << "Quest count " <<questionCount;
+        if (questionCount > 0)
+            chartModel->append(users->value(res->first),(double)res->second/questionCount*100);
+            qDebug() << users->value(res->first) << (double)res->second/questionCount*100;
+    }
         mainPage->setProperty("source","qrc:/QuizCompletedForm.qml");
+        if (pageView!=nullptr)
+            disconnect(pageView,nullptr,nullptr,nullptr);
         pageView = appWindow->findChild<QObject*>("quizCompPage");
-        if (pageView){
+        if (pageView!=nullptr){
                 qDebug() << "Nice! An end page!";
             connect(pageView, SIGNAL(formClosed()), this, SLOT(onTestCompletedFormClosed()));
         }
@@ -313,13 +513,14 @@ void FormController::runQuizForm(int questionCount)
 
     QJsonObject dbyid;
     int optNum = questionFormList->convertItemToEventDataJson(0,dbyid);
+      qDebug() << "----------------------" << dbyid;
     QString templ = "qst%1";
     FormLoadStruct fl;
     fl.mDataByID = dbyid;
     fl.mFormName = templ.arg(optNum);
     QJsonObject out;
     DataManager::write(&fl,&out);
-    EventMessage msg(this);
+    SendEventMessage msg(this);
     msg.setData(out);
     msg.setEvent("formLoad");
     msg.setReceiver("null");
@@ -329,12 +530,14 @@ void FormController::runQuizForm(int questionCount)
     rm->sendEvent(out);
 
     mainPage->setProperty("source","qrc:/QuizForm.qml");
+    if (pageView!=nullptr)
+        disconnect(pageView,nullptr,nullptr,nullptr);
     pageView = appWindow->findChild<QObject*>("quizPage");
     pageView->setProperty("questionsNum",questionCount);
-    if (pageView){
+    if (pageView!=nullptr){
         qDebug() << "Nice! A quizPage!";
         connect(pageView, SIGNAL(timerElapsed(int)), this, SLOT(onTimerElapsed(int)));
-        connect(pageView, SIGNAL(testEnded()), this, SLOT(onTestEnded()));
+        //connect(pageView, SIGNAL(testEnded()), this, SLOT(onTestEnded()));
     }
 }
 

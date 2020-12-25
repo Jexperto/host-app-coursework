@@ -1,13 +1,13 @@
-#include "eventmessage.h"
+#include "sendeventmessage.h"
 #include <QJsonObject>
 #include <datamanager.h>
 
-EventMessage::EventMessage(QObject *parent): QObject(parent)
+SendEventMessage::SendEventMessage(QObject *parent): QObject(parent)
 {
 
 }
 
-EventMessage::EventMessage(QString timeStamp, QString event, QJsonObject data, QString receiver,QObject *parent): QObject(parent)
+SendEventMessage::SendEventMessage(QString timeStamp, QString event, QJsonObject data, QString receiver,QObject *parent): QObject(parent)
 {
     this->mSendTimestamp = timeStamp;
     this->mEvent = event;
@@ -15,7 +15,7 @@ EventMessage::EventMessage(QString timeStamp, QString event, QJsonObject data, Q
     this->mReceiver = receiver;
 }
 
-void EventMessage::write(QJsonObject &json) const
+void SendEventMessage::write(QJsonObject &json) const
 {
     QJsonObject obj;
     obj["receiver"] = this->mReceiver;
@@ -27,7 +27,7 @@ void EventMessage::write(QJsonObject &json) const
     json = obj;
 }
 
-void EventMessage::read(const QJsonObject &json)
+void SendEventMessage::read(const QJsonObject &json)
 {
     if (json.contains("send-timestamp") && json["send-timestamp"].isString())
         mSendTimestamp = json["send-timestamp"].toString();
@@ -43,42 +43,42 @@ void EventMessage::read(const QJsonObject &json)
 
 }
 
-QString EventMessage::getSendTimestamp() const
+QString SendEventMessage::getSendTimestamp() const
 {
     return mSendTimestamp;
 }
 
-void EventMessage::setSendTimestamp(QString sendTimestamp)
+void SendEventMessage::setSendTimestamp(QString sendTimestamp)
 {
     mSendTimestamp = sendTimestamp;
 }
 
-QString EventMessage::getEvent() const
+QString SendEventMessage::getEvent() const
 {
     return mEvent;
 }
 
-void EventMessage::setEvent(const QString &event)
+void SendEventMessage::setEvent(const QString &event)
 {
     mEvent = event;
 }
 
-QJsonObject EventMessage::data() const
+QJsonObject SendEventMessage::data() const
 {
     return mData;
 }
 
-void EventMessage::setData(const QJsonObject &data)
+void SendEventMessage::setData(const QJsonObject &data)
 {
     mData = data;
 }
 
-QString EventMessage::receiver() const
+QString SendEventMessage::receiver() const
 {
     return mReceiver;
 }
 
-void EventMessage::setReceiver(const QString &receiver)
+void SendEventMessage::setReceiver(const QString &receiver)
 {
     mReceiver = receiver;
 }

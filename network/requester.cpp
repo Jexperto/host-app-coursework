@@ -51,11 +51,11 @@ void Requester::sendRequest(const QString &apiStr,
         reply = nullptr;
         Q_ASSERT(false);
     }
-
+    qDebug() << "Request sent";
     connect(reply, &QNetworkReply::finished, this,
             [this, funcSuccess, funcError, reply]() {
-        QJsonObject obj = parseReply(reply);
-
+        QJsonValue obj = parseReply(reply);
+          qDebug() << "Request finished";
         if (onFinishRequest(reply)) {
             if (funcSuccess != nullptr)
                 funcSuccess(obj);
@@ -71,6 +71,55 @@ void Requester::sendRequest(const QString &apiStr,
 
 }
 
+void Requester::sendRawRequest(const QString &apiStr,
+                            const handleFunc &funcSuccess,
+                            const handleFunc &funcError,
+                            Requester::Type type,
+                            const QByteArray &data, const QMap<QString,QString>* extraHeaders)
+{
+    QNetworkRequest request = createRequest(apiStr,extraHeaders);
+    qDebug() << apiStr;
+    QNetworkReply *reply;
+    switch (type) {
+    case Type::POST: {
+        QByteArray postDataByteArray = data;
+        reply = manager->post(request, postDataByteArray);
+        break;
+    } case Type::GET: {
+        reply = manager->get(request);
+        break;
+    } case Type::DELET: {
+        if (data.isEmpty())
+            reply = manager->deleteResource(request);
+        else
+            reply = manager->sendCustomRequest(request, "DELETE", data);
+        break;
+    } case Type::PATCH: {
+        reply = manager->sendCustomRequest(request, "PATCH", data);
+        break;
+    } default:
+        reply = nullptr;
+        Q_ASSERT(false);
+    }
+    qDebug() << "Request sent";
+    connect(reply, &QNetworkReply::finished, this,
+            [this, funcSuccess, funcError, reply]() {
+        QJsonValue obj = parseReply(reply);
+          qDebug() << "Request finished";
+        if (onFinishRequest(reply)) {
+            if (funcSuccess != nullptr)
+                funcSuccess(obj);
+        } else {
+            if (funcError != nullptr) {
+                handleQtNetworkErrors(reply, obj);
+                funcError(obj);
+            }
+        }
+        reply->close();
+        reply->deleteLater();
+    } );
+
+}
 
 QString Requester::getToken() const
 {
@@ -80,6 +129,11 @@ QString Requester::getToken() const
 void Requester::setToken(const QString &value)
 {
     token = value;
+}
+
+int Requester::getLastCode() const
+{
+    return lastCode;
 }
 
 
@@ -128,7 +182,7 @@ QNetworkReply* Requester::sendCustomRequest(QNetworkAccessManager* manager,
     return reply;
 }
 
-QJsonObject Requester::parseReply(QNetworkReply *reply)
+QJsonValue Requester::parseReply(QNetworkReply *reply)
 {
     QJsonObject jsonObj;
     QJsonDocument jsonDoc;
@@ -140,9 +194,9 @@ QJsonObject Requester::parseReply(QNetworkReply *reply)
         qWarning() << "Json parse error: " << parseError.errorString();
     }else{
         if(jsonDoc.isObject())
-            jsonObj  = jsonDoc.object();
+            return jsonDoc.object();
         else if (jsonDoc.isArray())
-            jsonObj["non_field_errors"] = jsonDoc.array();
+            return jsonDoc.array();
     }
     return jsonObj;
 }
@@ -152,6 +206,7 @@ bool Requester::onFinishRequest(QNetworkReply *reply)
     auto replyError = reply->error();
     if (replyError == QNetworkReply::NoError ) {
         int code = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
+        lastCode = code;
         if ((code >=200) && (code < 300)) {
             return true;
         }
@@ -159,7 +214,7 @@ bool Requester::onFinishRequest(QNetworkReply *reply)
     return false;
 }
 
-void Requester::handleQtNetworkErrors(QNetworkReply *reply, QJsonObject &obj)
+void Requester::handleQtNetworkErrors(QNetworkReply *reply, QJsonValue &obj)
 {
     auto replyError = reply->error();
     if (!(replyError == QNetworkReply::NoError ||
@@ -168,7 +223,7 @@ void Requester::handleQtNetworkErrors(QNetworkReply *reply, QJsonObject &obj)
           replyError == QNetworkReply::ProtocolInvalidOperationError
           ) ) {
         qDebug() << reply->error();
-        obj[KEY_QNETWORK_REPLY_ERROR] = reply->errorString();
+        obj.toObject()[KEY_QNETWORK_REPLY_ERROR] = reply->errorString();
     } else if (replyError == QNetworkReply::ContentNotFoundError)
-        obj[KEY_CONTENT_NOT_FOUND] = reply->errorString();
+        obj.toObject()[KEY_CONTENT_NOT_FOUND] = reply->errorString();
 }

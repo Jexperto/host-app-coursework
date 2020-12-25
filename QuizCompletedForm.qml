@@ -14,26 +14,39 @@ import QtQuick.Shapes 1.14
 
                 TextContainer {
                             id: endText
+                            height: compForm.height/8
                             text: compForm.text
-                            anchors.fill: parent
-                            anchors.bottomMargin: 309
+                            anchors.left: parent.left
+                            anchors.right: parent.right
+                            anchors.top: parent.top
                             anchors.leftMargin: 137
-                            anchors.topMargin: 106
+                            anchors.topMargin: compForm.height/7
                             anchors.rightMargin: 137
                             backgroundColor: "#ffffff"
                             minimumPointSize: 10
                             fontPointSize: 40
                                             }
+
                 BarStack{
+                    color: "white"
+                    border.color: "black"
+                    border.width: 3
+                    //textPointSize: 20
+                  //  width: 100
+
                     anchors.left: parent.left
                     anchors.right: parent.right
                     anchors.top: endText.bottom
-                    anchors.horizontalCenterOffset: 0
-                    anchors.horizontalCenter: parent.horizontalCenter
-                    anchors.topMargin: 40
+                    anchors.bottom: parent.bottom
+                    anchors.bottomMargin:  (count > 0 && parent.height/count*1.2 > 20) ? (parent.height/count*1.2 < parent.height/2 ? parent.height/count*1.2 : parent.height/2 ) : 20
+                    anchors.topMargin: count < 10 ? endText.anchors.topMargin/3 : endText.anchors.topMargin/6
                     anchors.leftMargin: 200
                     anchors.rightMargin: 200
+                    barColor: compForm.colorFirstAccent
 
+
+
+                    //anchors.fill:parent
                 }
 
         Button {

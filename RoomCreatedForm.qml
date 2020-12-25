@@ -17,6 +17,7 @@ PageBackground{
     signal deleteRoomClicked();
     signal createTestClicked();
     signal startTestClicked();
+    signal refreshClicked();
         ColumnLayout {
             id: columnLayout
             y: 190
@@ -73,7 +74,12 @@ PageBackground{
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                 onClicked: page.createTestClicked()
             }
-
+            CustomButton {
+                id: refreshButton
+                text: qsTr("Обновить")
+                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                onClicked: page.refreshClicked()
+            }
         }
 
 
@@ -127,7 +133,9 @@ PageBackground{
             text: page.codeText
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
         }
-}}
+        }}
+
+
 
     }
 

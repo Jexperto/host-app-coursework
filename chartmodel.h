@@ -16,7 +16,8 @@ public:
     explicit ChartModel(QObject *parent = nullptr);
     enum{
         nameRole = Qt::UserRole,
-        resultRole
+        resultRole,
+        countRole
     };
     // Basic functionality:
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
@@ -25,6 +26,7 @@ public:
 
     // Add data:
     void append(QString name, double result);
+    void clear();
     virtual QHash<int,QByteArray> roleNames()const override;
 
     QList<ResultUnit> getItems();

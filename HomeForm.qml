@@ -10,7 +10,7 @@ PageBackground{
     objectName: "homePage"
     colorFirstAccent: app.colorAccentBlue
     signal createRoomClicked();
-//    signal loadTestClicked();
+    signal testButtonClicked();
 //    signal createTestClicked();
 //    signal createPageClicked();
 //    signal deleteRoomClicked();
@@ -32,6 +32,13 @@ PageBackground{
                     busyIndicator.visible = true;
                 }
             }
+//            CustomButton {
+//                id: testButton
+//                text: qsTr("Test")
+//                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+//                onClicked: {page.testButtonClicked();
+//                }
+//            }
 
         }
 

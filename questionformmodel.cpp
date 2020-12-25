@@ -1,5 +1,6 @@
 #include "questionformmodel.h"
 #include "questionformlist.h"
+#include <QRandomGenerator>
 
 QuestionFormModel::QuestionFormModel(QObject *parent)
     : QAbstractListModel(parent), mFormList(nullptr)
@@ -30,42 +31,50 @@ QVariant QuestionFormModel::data(const QModelIndex &index, int role) const
          case timerRunningRole:
              return QVariant(item.timerRunning);
         case answersRole:
-             return QVariant(item.answers);
+            if (item.wrongAnswers.length()>0){
+                QStringList temp(item.wrongAnswers);
+                QRandomGenerator rng(this->mFormList->getShuffleSeed());
+                 temp.insert(rng.bounded(item.wrongAnswers.length()),item.rightAnswer);
+             return QVariant(temp);}
+         QStringList temp;
+         //temp.append(item.rightAnswer);
+         temp.append("Введите ответ в поле ввода");
+         return QVariant(temp);
      }
     return QVariant();
 }
 
-bool QuestionFormModel::setData(const QModelIndex &index, const QVariant &value, int role)
-{
-    if (!mFormList)
-        return false;
-      QuestionFormItem item = mFormList->items().at(index.row());
-      switch (role) {
-          case questionRole:
-              item.question = value.toString();
-          break;
-          case numOfColsRole:
-              item.numOfCols = value.toInt();
-          break;
-          case numOfRowsRole:
-              item.numOfRows = value.toInt();
-              break;
-          case timerRole:
-              item.timer = value.toInt();
-              break;
-          case timerRunningRole:
-              item.timerRunning = value.toBool();
-              break;
-         case answersRole:
-              item.answers = value.toStringList();
-              break;
-      }
-    if (mFormList->setItemAt(index.row(),item)) {
-        emit dataChanged(index, index, QVector<int>() << role);
-        return true;
-    }
-    return false;
-}
+//bool QuestionFormModel::setData(const QModelIndex &index, const QVariant &value, int role)
+//{
+//    if (!mFormList)
+//        return false;
+//      QuestionFormItem item = mFormList->items().at(index.row());
+//      switch (role) {
+//          case questionRole:
+//              item.question = value.toString();
+//          break;
+//          case numOfColsRole:
+//              item.numOfCols = value.toInt();
+//          break;
+//          case numOfRowsRole:
+//              item.numOfRows = value.toInt();
+//              break;
+//          case timerRole:
+//              item.timer = value.toInt();
+//              break;
+//          case timerRunningRole:
+//              item.timerRunning = value.toBool();
+//              break;
+//         case answersRole:
+//              item.answers = value.toStringList();
+//              break;
+//      }
+//    if (mFormList->setItemAt(index.row(),item)) {
+//        emit dataChanged(index, index, QVector<int>() << role);
+//        return true;
+//    }
+//    return false;
+//}
 
 Qt::ItemFlags QuestionFormModel::flags(const QModelIndex &index) const
 {

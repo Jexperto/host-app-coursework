@@ -5,12 +5,12 @@
 #include <messagedata.h>
 
 #define FORM_LOAD "formLoad"
-class EventMessage : QObject
+class SendEventMessage : QObject
 {
     Q_OBJECT
 public:
-    explicit EventMessage(QObject *parent = nullptr);
-    explicit EventMessage(QString timeStamp, QString event,QJsonObject data, QString receiver, QObject *parent = nullptr);
+    explicit SendEventMessage(QObject *parent = nullptr);
+    explicit SendEventMessage(QString timeStamp, QString event,QJsonObject data, QString receiver, QObject *parent = nullptr);
     QString getSendTimestamp() const;
     void setSendTimestamp(QString sendTimestamp);
 

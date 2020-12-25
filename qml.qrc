@@ -21,6 +21,7 @@
         <file>htmls/5opt_question.html</file>
         <file>htmls/6opt_question.html</file>
         <file>htmls/text_question.html</file>
+        <file>htmls/app.css</file>
     </qresource>
     <qresource prefix="/kek"/>
 </RCC>

@@ -9,7 +9,8 @@ struct QuestionFormItem{
     int numOfCols;
     int timer;
     bool timerRunning;
-    QStringList answers;
+    QString rightAnswer;
+    QStringList wrongAnswers;
 };
 
 

@@ -24,6 +24,10 @@ public:
     QuestionFormItem getItem(int index) const;
     void clear();   
     int size();
+    QuestionFormList(int shuffleSeed, QObject *parent);
+    int getShuffleSeed() const;
+    void setShuffleSeed(int value);
+
 signals:
     void beginInsertRow(int row);
     void beginRemoveRow(int row);
@@ -32,7 +36,7 @@ signals:
 
 private:
     QVector<QuestionFormItem> mItems;
-
+    int shuffleSeed;
 };
 
 #endif // QUESTIONFORMLIST_H

@@ -29,10 +29,11 @@ void FormList::write(QJsonArray& json) const
         formObject["timer"] = form.timer;
         formObject["timerRunning"] = form.timerRunning;
         QJsonArray ansArray;
-        foreach(const auto answer, form.answers) {
+        foreach(const auto answer, form.wrongAnswers) {
             ansArray.append(answer);
         }
-        formObject["answers"] = ansArray;
+        formObject["wrongAnswers"] = ansArray;
+        formObject["rightAnswer"] = form.rightAnswer;
         array.append(formObject);
     }
     json = array;
@@ -57,13 +58,15 @@ void FormList::read(const QJsonArray& json)
             item.timer = formObject["timer"].toInt();
         if (formObject.contains("timerRunning") && formObject["timerRunning"].isBool())
             item.timerRunning = formObject["timerRunning"].toBool();
-        if (formObject.contains("answers") && formObject["answers"].isArray()) {
-            QJsonArray answerArray = formObject["answers"].toArray();
-            item.answers.clear();
-            item.answers.reserve(answerArray.size());
+        if (formObject.contains("wrongAnswers") && formObject["wrongAnswers"].isArray()) {
+            QJsonArray answerArray = formObject["wrongAnswers"].toArray();
+            item.wrongAnswers.clear();
+            item.wrongAnswers.reserve(answerArray.size());
             for (int i = 0; i < answerArray.size(); ++i) {
-                item.answers.append(answerArray[i].toString());
+                item.wrongAnswers.append(answerArray[i].toString());
             }
+        if (formObject.contains("rightAnswer") && formObject["rightAnswer"].isString())
+                item.rightAnswer = formObject["rightAnswer"].toString();
             mObjectsList.append(item);
         }
 

@@ -1,10 +1,24 @@
 #include "questionformlist.h"
-#include "QJsonObject"
+#include <QJsonObject>
+#include <QRandomGenerator>
 QuestionFormList::QuestionFormList(QObject *parent) : QObject(parent)
 {
-    //mItems.append(QuestionFormItem({"Test question",2,2,20,true,QStringList({"1","2","3","4"})}));
-    //mItems.append(QuestionFormItem({"Test question",2,2,20,true,QStringList({"1","2","3","4"})}));
-    //mItems.append(QuestionFormItem({"Test question",2,2,20,true,QStringList({"1","2","3","4"})}));
+    this->shuffleSeed = 0;
+}
+
+QuestionFormList::QuestionFormList(int shuffleSeed, QObject *parent) : QObject(parent)
+{
+    this->shuffleSeed = shuffleSeed;
+}
+
+int QuestionFormList::getShuffleSeed() const
+{
+    return shuffleSeed;
+}
+
+void QuestionFormList::setShuffleSeed(int value)
+{
+    shuffleSeed = value;
 }
 
 QVector<QuestionFormItem> QuestionFormList::items() const
@@ -39,19 +53,25 @@ void QuestionFormList::removeItem(int index)
     emit removedRow();}
 
 int QuestionFormList::convertItemToEventDataJson(int index, QJsonObject& data)
-{
+{       //TODO: shuffle
         QJsonObject formObject;
         formObject["question"] = this->mItems.at(index).question;
-        if (this->mItems.at(index).answers.length()>1){
+        QStringList temp(this->mItems.at(index).wrongAnswers);
+        if (this->mItems.at(index).wrongAnswers.length()>0){
+            QStringList temp(this->mItems.at(index).wrongAnswers);
+            QRandomGenerator rng(shuffleSeed);
+            temp.insert(rng.bounded(this->mItems.at(index).wrongAnswers.length()),this->mItems.at(index).rightAnswer);
+
             int count = 1;
             QString buttonTemplate = "button%1";
-            foreach(const auto answer, this->mItems.at(index).answers) {
+            foreach(const auto answer, temp) {
                 formObject[buttonTemplate.arg(count)] = answer;
                 count++;
             }
          }
+
         data = formObject;
-        return this->mItems.at(index).answers.length();
+        return (this->mItems.at(index).wrongAnswers.length()+1);
 }
 
 QuestionFormItem QuestionFormList::getItem(int index) const

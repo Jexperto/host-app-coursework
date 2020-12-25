@@ -9,7 +9,6 @@ CONFIG += c++11
 SOURCES += \
     chartmodel.cpp \
     datamanager.cpp \
-    eventmessage.cpp \
     formcontroller.cpp \
     formlist.cpp \
     main.cpp \
@@ -17,7 +16,9 @@ SOURCES += \
     network/roommanager.cpp \
     questionformlist.cpp \
     questionformmodel.cpp \
-    network/requester.cpp
+    network/requester.cpp \
+    receiveeventmessage.cpp \
+    sendeventmessage.cpp
 
 RESOURCES += qml.qrc
 
@@ -38,7 +39,6 @@ DISTFILES += \
 HEADERS += \
     chartmodel.h \
     datamanager.h \
-    eventmessage.h \
     formcontroller.h \
     formlist.h \
     messagedata.h \
@@ -46,4 +46,6 @@ HEADERS += \
     questionformlist.h \
     questionformmodel.h \
     network/requester.h \
+    receiveeventmessage.h \
+    sendeventmessage.h \
     structures.h

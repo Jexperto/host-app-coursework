@@ -22,6 +22,8 @@ QVariant ChartModel::data(const QModelIndex &index, int role) const
              return QVariant(item.name);
          case resultRole:
             return QVariant(item.result);
+        case countRole:
+            return QVariant(rowCount());
      }
      return QVariant();
 }
@@ -33,12 +35,18 @@ void ChartModel::append(QString name, double result)
         endInsertRows();
 }
 
+void ChartModel::clear()
+{
+    items.clear();
+}
+
 QHash<int, QByteArray> ChartModel::roleNames() const
 {
 
          QHash<int,QByteArray> names;
          names[nameRole] = "name";
          names[resultRole] = "result";
+         names[countRole] = "count";
          return names;
 
 }

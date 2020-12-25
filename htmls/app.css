@@ -1,0 +1,68 @@
+.app-body{
+    padding: 0 3rem;
+}
+
+button{
+    cursor: pointer;
+}
+
+.box{
+    border: 0.5rem solid black ;
+    background-color: #FFFFFF;
+    padding: 3vw 1vw;
+    word-wrap: break-word;
+}
+
+.question{
+    font-size:3vw;
+}
+
+.answer{
+    font-size:1.5vw;
+}
+
+.text-input{
+    font-size:1.5vw;
+}
+
+
+
+#background-grey{
+    position: fixed;
+    height: 100%;
+    width: 100%;
+    z-index: -3;
+    background-color:#F4F4F6;
+    text-align: center;
+}
+
+#background-blue{
+    height:100%;
+    width: 70%;
+    z-index: -1;
+    background-color: #234068;
+    margin: 0 auto;
+    
+}
+
+#background-red{
+    height:100%;
+    width: 70%;
+    z-index: -2;
+    background-color: #E63946;
+    margin: 0 auto;
+}
+
+@media screen and (max-width: 768px) {
+    .question{
+        font-size:5vw;
+    }
+    
+    .answer{
+        font-size:3.75vw;
+    }
+    .text-input{
+        
+        font-size:3.75vw;
+    }
+  }

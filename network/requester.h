@@ -14,7 +14,7 @@ class Requester : public QObject
 {
     Q_OBJECT
 public:
-    typedef std::function<void(const QJsonObject &)> handleFunc;
+    typedef std::function<void(const QJsonValue &)> handleFunc;
     typedef std::function<void()> finishFunc;
 
     static const QString KEY_QNETWORK_REPLY_ERROR;
@@ -41,11 +41,14 @@ public:
     QString getToken() const;
     void setToken(const QString &value);
 
+    int getLastCode() const;
+
+    void sendRawRequest(const QString &apiStr, const handleFunc &funcSuccess, const handleFunc &funcError, Requester::Type type, const QByteArray &data, const QMap<QString, QString> *extraHeaders);
 private:
     static const QString httpTemplate;
     static const QString httpsTemplate;
     static const QString testTemplate;
-
+    int lastCode;
     QString host;
     int port;
     QString token;
@@ -62,11 +65,11 @@ private:
                                      const QString &type,
                                      const QVariantMap &data);
 
-    QJsonObject parseReply(QNetworkReply *reply);
+    QJsonValue parseReply(QNetworkReply *reply);
 
     bool onFinishRequest(QNetworkReply *reply);
 
-    void handleQtNetworkErrors(QNetworkReply *reply, QJsonObject &obj);
+    void handleQtNetworkErrors(QNetworkReply *reply, QJsonValue &obj);
     QNetworkAccessManager *manager;
 
 signals:
