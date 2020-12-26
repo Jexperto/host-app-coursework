@@ -4,7 +4,6 @@ Rectangle{
     id:root
     property int minimumBarWidth: 100
     property int preferredBarWidth: 200
-
     property color barColor: "#70A5CA"
     property int count: 0
     width: 400
@@ -85,7 +84,7 @@ Rectangle{
                     id: pcText
                     font.family: "Helvetica"
                     font.pixelSize: parent.height*0.8
-                    text:  model.result.toString() + "%";
+                    text:  Math.ceil(model.result).toString() + "%";
                     anchors.fill: parent
                     verticalAlignment: Text.AlignVCenter
 

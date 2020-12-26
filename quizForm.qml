@@ -31,8 +31,10 @@ Item {
             QuestionForm{
                             id: qform;
                             timer: model.timer;
-                            timerRunning: model.timerRunning;
-                            question: model.question
+                            timerRunning: index===0
+                            question: model.question;
+                            hasImage: (model.imagePath !== "")
+                            imagePath: "file:/"+ model.imagePath;
                             numOfRows: model.numOfRows;
                             numOfCols:model.numOfCols;
                             answers: model.answers

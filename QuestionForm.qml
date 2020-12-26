@@ -10,6 +10,8 @@ import QtQuick.Shapes 1.14
         property int numOfRows: 1
         property int numOfCols: 1
         property int timer: 30
+        property bool hasImage: false
+        property string imagePath: ""
         property bool timerRunning: false
         property string question: "Sample text"
         property alias answers: gridview.model
@@ -106,7 +108,7 @@ import QtQuick.Shapes 1.14
 
         TextContainer {
             id: questionText
-            height: pageBackground.height/3.5
+            height: image.enabled ? pageBackground.height/5 : pageBackground.height/4
             text: pageBackground.question
             fontPointSize: 40
             anchors.left: parent.left
@@ -114,21 +116,31 @@ import QtQuick.Shapes 1.14
             anchors.top: parent.top
             anchors.rightMargin: 197
             anchors.leftMargin: 198
-            anchors.topMargin: 68
+            anchors.topMargin: pageBackground.height/15
         }
 
+        Image {
+            id: image
+            enabled: pageBackground.hasImage
+            fillMode: Image.PreserveAspectFit
+            anchors.top: questionText.bottom
+            sourceSize.width: pageBackground.width*.3
+            anchors.topMargin: pageBackground.height/30
+            source: pageBackground.imagePath
+            anchors.horizontalCenter: parent.horizontalCenter
+        }
 
 
         GridView {
             id: gridview
             anchors.left: parent.left
             anchors.right: parent.right
-            anchors.top: questionText.bottom
+            anchors.top: image.enabled ? image.bottom : questionText.bottom
             anchors.bottom: parent.bottom
-            anchors.rightMargin: 129
-            anchors.leftMargin: 130
-            anchors.bottomMargin: 59
-            anchors.topMargin: 20
+            anchors.rightMargin: 150
+            anchors.leftMargin: 150
+            anchors.bottomMargin: pageBackground.height/20
+            anchors.topMargin: pageBackground.height/20
 
             cellWidth:  width/pageBackground.numOfCols
             cellHeight: pageBackground.numOfCols==1 && pageBackground.numOfRows == 1 ? questionText.height*0.75:height/pageBackground.numOfRows
@@ -156,6 +168,7 @@ import QtQuick.Shapes 1.14
 
 
             }
+
         }
 
 
@@ -163,7 +176,7 @@ import QtQuick.Shapes 1.14
 
 /*##^##
 Designer {
-    D{i:0;formeditorZoom:0.6600000262260437}
+    D{i:0;autoSize:true;formeditorZoom:1.100000023841858;height:480;width:640}
 }
 ##^##*/
 

@@ -8,7 +8,7 @@ struct QuestionFormItem{
     int numOfRows;
     int numOfCols;
     int timer;
-    bool timerRunning;
+    QString imagePath;
     QString rightAnswer;
     QStringList wrongAnswers;
 };

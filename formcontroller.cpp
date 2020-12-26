@@ -62,6 +62,17 @@ FormController::FormController(QObject *parent) : QObject(parent)
 //        jsonFile.write(QJsonDocument(testObject).toJson());
 //        jsonFile.close();
 
+//     QFile jsonFile("form.json");
+//    if (!jsonFile.open(QIODevice::ReadOnly)) {
+//                    qDebug() << "Fuck, can't read for shit";
+//               }
+
+//               QByteArray saveData = jsonFile.readAll();
+//               QJsonDocument loadDoc(QJsonDocument::fromJson(saveData));
+//               FormList list;
+//               list.read(loadDoc.array());
+
+
 }
 
 FormController::~FormController()
@@ -85,19 +96,15 @@ void FormController::onReceivedEvent(ReceiveEventMessage *eventMessage)
    if (eventType == "connect" && !testRunning){
         connect(rm,&RoomManager::receivedUsers,this,&FormController::onReceivedUsers);
         rm->getUsers();
-        rm->receiveEvent();
-
-    return;
    }
-
+   else
    if (eventType == "disconnect"){
-    return;
    }
-
+   else
    if (eventType == "unknown"){
-    return;
-   }
 
+   }
+   else
    if (eventType == "inputData"){
        QJsonObject ans = eventMessage->data();
        qDebug() << "--------User answer: "<< ans;
@@ -109,9 +116,9 @@ void FormController::onReceivedEvent(ReceiveEventMessage *eventMessage)
            value = ans["answer"].toString();
        qDebug() << "value: "<< value;
        currentQuestionUserAnswers->insert(eventMessage->sender(),value);
-       rm->receiveEvent();
-    return;
    }
+   rm->receiveEvent();
+
 }
 
 void FormController::onReceivedUsers(QMap<QString, QString>* users)
@@ -395,8 +402,8 @@ void FormController::onTimerElapsed(int index)
                   msg.setReceiver("null");
                   msg.setSendTimestamp(QDateTime::currentDateTime().toString(Qt::ISODate));
                   msg.write(out);
-                  qDebug() << out;
                  rm->sendEvent(out);
+                 qDebug() << "Request sent: "<< out;
                   }
                   context->deleteLater();
                   if (index>=questionCount-1){
@@ -445,67 +452,12 @@ void FormController::testMethod()
         users->insert("4","In");
         users->insert("5","Babylon");
 
-        users->insert("6","Me");
-        users->insert("7","You");
-        users->insert("8","There");
-        users->insert("9","In");
-        users->insert("10","Babylon");
-
-        users->insert("11","Me");
-        users->insert("12","You");
-        users->insert("13","There");
-        users->insert("14","In");
-        users->insert("15","Babylon");
-
-        users->insert("16","Me");
-        users->insert("17","You");
-        users->insert("18","There");
-        users->insert("19","In");
-        users->insert("20","Babylon");
-
-        users->insert("21","Me");
-        users->insert("22","You");
-        users->insert("23","There");
-        users->insert("24","In");
-        users->insert("25","Babylon");
-
-        users->insert("26","Me");
-        users->insert("27","You");
-        users->insert("28","There");
-
         userAnswerResults.append(QPair<QString,int>("1",8));
         userAnswerResults.append(QPair<QString,int>("2",7));
         userAnswerResults.append(QPair<QString,int>("3",6));
         userAnswerResults.append(QPair<QString,int>("5",4));
         userAnswerResults.append(QPair<QString,int>("4",5));
 
-        userAnswerResults.append(QPair<QString,int>("6",6));
-        userAnswerResults.append(QPair<QString,int>("7",8));
-        userAnswerResults.append(QPair<QString,int>("8",4));
-        userAnswerResults.append(QPair<QString,int>("9",7));
-        userAnswerResults.append(QPair<QString,int>("10",5));
-
-        userAnswerResults.append(QPair<QString,int>("11",6));
-        userAnswerResults.append(QPair<QString,int>("12",8));
-        userAnswerResults.append(QPair<QString,int>("13",4));
-        userAnswerResults.append(QPair<QString,int>("14",7));
-        userAnswerResults.append(QPair<QString,int>("15",5));
-
-        userAnswerResults.append(QPair<QString,int>("16",8));
-        userAnswerResults.append(QPair<QString,int>("17",7));
-        userAnswerResults.append(QPair<QString,int>("18",6));
-        userAnswerResults.append(QPair<QString,int>("19",4));
-        userAnswerResults.append(QPair<QString,int>("20",5));
-
-        userAnswerResults.append(QPair<QString,int>("21",6));
-        userAnswerResults.append(QPair<QString,int>("22",8));
-        userAnswerResults.append(QPair<QString,int>("23",4));
-        userAnswerResults.append(QPair<QString,int>("24",7));
-        userAnswerResults.append(QPair<QString,int>("25",5));
-
-        userAnswerResults.append(QPair<QString,int>("26",6));
-        userAnswerResults.append(QPair<QString,int>("27",8));
-        userAnswerResults.append(QPair<QString,int>("28",4));
             onTestEnded();
  //  mainPage->setProperty("source","qrc:/QuizCompletedForm.qml");
 }

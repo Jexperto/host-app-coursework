@@ -28,8 +28,8 @@ QVariant QuestionFormModel::data(const QModelIndex &index, int role) const
              return QVariant(item.numOfRows);
          case timerRole:
              return QVariant(item.timer);
-         case timerRunningRole:
-             return QVariant(item.timerRunning);
+         case imagePathRole:
+             return QVariant(item.imagePath);
         case answersRole:
             if (item.wrongAnswers.length()>0){
                 QStringList temp(item.wrongAnswers);
@@ -91,8 +91,8 @@ QHash<int, QByteArray> QuestionFormModel::roleNames() const
      names[numOfColsRole] = "numOfCols";
      names[questionRole] = "question";
      names[timerRole] = "timer";
-     names[timerRunningRole] = "timerRunning";
      names[answersRole] = "answers";
+     names[imagePathRole] = "imagePath";
      return names;
 }
 

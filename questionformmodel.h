@@ -16,8 +16,8 @@ public:
         numOfRowsRole,
         numOfColsRole,
         timerRole,
-        timerRunningRole,
-        answersRole
+        answersRole,
+        imagePathRole
     };
     int rowCount(const QModelIndex &parent = QModelIndex()) const override;
 

@@ -27,7 +27,7 @@ void FormList::write(QJsonArray& json) const
         formObject["numOfRows"] = form.numOfRows;
         formObject["numOfCols"] = form.numOfCols;
         formObject["timer"] = form.timer;
-        formObject["timerRunning"] = form.timerRunning;
+        formObject["imagePath"] = form.imagePath;
         QJsonArray ansArray;
         foreach(const auto answer, form.wrongAnswers) {
             ansArray.append(answer);
@@ -56,8 +56,8 @@ void FormList::read(const QJsonArray& json)
             item.numOfCols = formObject["numOfCols"].toInt();
         if (formObject.contains("timer") && formObject["timer"].isDouble())
             item.timer = formObject["timer"].toInt();
-        if (formObject.contains("timerRunning") && formObject["timerRunning"].isBool())
-            item.timerRunning = formObject["timerRunning"].toBool();
+        if (formObject.contains("imagePath") && formObject["imagePath"].isString())
+            item.imagePath = formObject["imagePath"].toString();
         if (formObject.contains("wrongAnswers") && formObject["wrongAnswers"].isArray()) {
             QJsonArray answerArray = formObject["wrongAnswers"].toArray();
             item.wrongAnswers.clear();
