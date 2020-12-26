@@ -128,6 +128,7 @@ import QtQuick.Shapes 1.14
             source: pageBackground.imagePath;
             anchors.topMargin: pageBackground.height/30;
             anchors.horizontalCenter: parent.horizontalCenter
+
         }
 
 
