@@ -124,9 +124,9 @@ import QtQuick.Shapes 1.14
             enabled: pageBackground.hasImage
             fillMode: Image.PreserveAspectFit
             anchors.top: questionText.bottom
-            sourceSize.width: pageBackground.width*.3
-            anchors.topMargin: pageBackground.height/30
-            source: pageBackground.imagePath
+            sourceSize.width: enabled ? pageBackground.width*.3 : 0
+            source: pageBackground.imagePath;
+            anchors.topMargin: pageBackground.height/30;
             anchors.horizontalCenter: parent.horizontalCenter
         }
 
