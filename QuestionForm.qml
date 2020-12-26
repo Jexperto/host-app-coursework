@@ -126,8 +126,17 @@ import QtQuick.Shapes 1.14
             anchors.top: questionText.bottom
             sourceSize.width: pageBackground.width*.3
             anchors.topMargin: pageBackground.height/30
-            source: pageBackground.imagePath
             anchors.horizontalCenter: parent.horizontalCenter
+            Component.onCompleted: {
+                if (pageBackground.hasImage){
+                    try{
+                        image.source = pageBackground.imagePath
+                    }
+                    catch(error){
+                        image.enabled = false;
+                        pageBackground.hasImage = false;
+                    }
+                }}
         }
 
 
