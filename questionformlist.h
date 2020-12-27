@@ -18,7 +18,7 @@ public:
     explicit QuestionFormList(QObject *parent = nullptr);
     QVector<QuestionFormItem> items() const;
     bool setItemAt(int index, const QuestionFormItem &item);
-    void appendItem(QuestionFormItem item);
+    void appendItem(const QuestionFormItem &item);
     void removeItem(int index);
     int convertItemToEventDataJson(int index, QJsonObject& data);
     QuestionFormItem getItem(int index) const;

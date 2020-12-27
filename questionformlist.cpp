@@ -1,7 +1,6 @@
 #include "questionformlist.h"
 #include <QJsonObject>
 #include <QRandomGenerator>
-#include <QFileInfo>
 QuestionFormList::QuestionFormList(QObject *parent) : QObject(parent)
 {
     this->shuffleSeed = 0;
@@ -38,11 +37,9 @@ bool QuestionFormList::setItemAt(int index, const QuestionFormItem &item)
 
 }
 
-void QuestionFormList::appendItem(QuestionFormItem item)
+void QuestionFormList::appendItem(const QuestionFormItem &item)
 {
     beginInsertRow(mItems.size());
-    if (!QFileInfo::exists(item.imagePath))
-        item.imagePath = "";
     mItems.append(item);
     insertedRow();
 }

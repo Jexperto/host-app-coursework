@@ -68,12 +68,12 @@ PageBackground{
                 onClicked: page.loadTestClicked()
             }
 
-            CustomButton {
-                id: createTestButton
-                text: qsTr("Создать тест")
-                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                onClicked: page.createTestClicked()
-            }
+//            CustomButton {
+//                id: createTestButton
+//                text: qsTr("Создать тест")
+//                Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+//                onClicked: page.createTestClicked()
+//            }
             CustomButton {
                 id: refreshButton
                 text: qsTr("Обновить")

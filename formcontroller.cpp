@@ -251,7 +251,11 @@ void FormController::onPageCreated(bool success)
 QString FormController::getHTMLPage(int questNum)
 {
     QFile file;
-    if (questNum<2){
+    if (questNum<1){
+        file.setFileName(":/htmls/main.html");
+    }
+    else
+    if (questNum==1){
         file.setFileName(":/htmls/text_question.html");
     }
     else{
@@ -295,6 +299,11 @@ void FormController::onCreateRoomButtonClicked()
         else
              qDebug() << "Can't open stylesheet file";
 
+        QJsonObject info;
+        info["name"] = "main";
+        QString data = getHTMLPage(0);
+        info["data"] = data;
+        rm->addPage(info);
 
         mainPage->setProperty("source","qrc:/RoomCreatedForm.qml");
         if (pageView!=nullptr)
